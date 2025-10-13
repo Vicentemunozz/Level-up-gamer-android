@@ -28,5 +28,7 @@ fun AppNavigation() {
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(navController)
         }
+
     }
+
 }
