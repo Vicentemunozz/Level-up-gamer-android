@@ -6,5 +6,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "users")
 data class User(
     @PrimaryKey
-    val email: String
+    val email: String,
+    val username: String,
+    val birthDate: String,
+    val password: String, // Note: In a real app, hash passwords!
+    val isAdmin: Boolean = false
 )

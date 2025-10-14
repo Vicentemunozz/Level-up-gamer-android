@@ -11,8 +11,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -20,11 +22,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.testing_gemini_ddam.navigation.BottomNavItem
+import com.example.testing_gemini_ddam.screens.AdminScreen
 import com.example.testing_gemini_ddam.screens.HomeScreen
 import com.example.testing_gemini_ddam.screens.InventoryScreen
 import com.example.testing_gemini_ddam.screens.LoginScreen
 import com.example.testing_gemini_ddam.screens.ProfileScreen
+import com.example.testing_gemini_ddam.screens.RegisterScreen
 import com.example.testing_gemini_ddam.ui.theme.Testing_gemini_ddamTheme
+import com.example.testing_gemini_ddam.user.LoginState
+import com.example.testing_gemini_ddam.user.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,13 +45,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(userViewModel: UserViewModel = viewModel()) {
     val navController = rememberNavController()
-    val items = listOf(
-        BottomNavItem.Login,
-        BottomNavItem.Profile,
-        BottomNavItem.Inventory,
-    )
+    val loginState by userViewModel.loginState.collectAsState()
+
+    val items = mutableListOf(BottomNavItem.Login, BottomNavItem.Profile, BottomNavItem.Inventory)
+    if (loginState is LoginState.LoggedIn && (loginState as LoginState.LoggedIn).user.isAdmin) {
+        items.add(BottomNavItem.Admin)
+    }
 
     Scaffold(
         bottomBar = {
@@ -77,9 +84,11 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen(navController) }
+            composable("register") { RegisterScreen(navController) }
             composable(BottomNavItem.Login.route) { LoginScreen(navController) }
             composable(BottomNavItem.Profile.route) { ProfileScreen(navController) }
             composable(BottomNavItem.Inventory.route) { InventoryScreen(navController) }
+            composable(BottomNavItem.Admin.route) { AdminScreen(navController) }
         }
     }
 }

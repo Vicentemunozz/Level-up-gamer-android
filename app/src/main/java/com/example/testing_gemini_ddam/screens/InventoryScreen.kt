@@ -1,5 +1,8 @@
 package com.example.testing_gemini_ddam.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +34,11 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
 
     var productName by remember { mutableStateOf("") }
     var productQuantity by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
+    }
 
     Column(
         modifier = Modifier
@@ -41,26 +49,33 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
             OutlinedTextField(
                 value = productName,
                 onValueChange = { productName = it },
-                label = { Text("Product Name") },
+                label = { Text("Nombre del producto") },
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = productQuantity,
                 onValueChange = { productQuantity = it },
-                label = { Text("Quantity") },
+                label = { Text("Cantidad") },
                 modifier = Modifier.weight(1f)
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        Button(onClick = { launcher.launch("image/*") }) {
+            Text("Seleccionar imagen")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Button(onClick = { 
-            inventoryViewModel.addProduct(productName, productQuantity)
+            inventoryViewModel.addProduct(productName, productQuantity, imageUri?.toString())
             productName = ""
             productQuantity = ""
+            imageUri = null
         }) {
-            Text("Add Product")
+            Text("Añadir producto")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -75,7 +90,7 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
                 ) {
                     Text(text = "${product.name} - ${product.quantity}")
                     Button(onClick = { inventoryViewModel.deleteProduct(product) }) {
-                        Text("Delete")
+                        Text("Eliminar")
                     }
                 }
             }

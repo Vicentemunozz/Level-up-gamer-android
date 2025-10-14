@@ -1,7 +1,6 @@
 package com.example.testing_gemini_ddam.screens
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,7 +25,7 @@ import com.google.android.gms.location.LocationServices
 @Composable
 fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
-    var location by remember { mutableStateOf("No location yet") }
+    var location by remember { mutableStateOf("Aún no hay ubicación") }
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -38,12 +37,12 @@ fun ProfileScreen(navController: NavController) {
                 location = if (it != null) {
                     "Lat: ${it.latitude}, Lon: ${it.longitude}"
                 } else {
-                    "Cannot get location"
+                    "No se puede obtener la ubicación"
                 }
             }
         } else {
             // Permission Denied
-            location = "Permission denied"
+            location = "Permiso denegado"
         }
     }
 
@@ -64,7 +63,7 @@ fun ProfileScreen(navController: NavController) {
                          location = if (it != null) {
                             "Lat: ${it.latitude}, Lon: ${it.longitude}"
                         } else {
-                            "Cannot get location"
+                            "No se puede obtener la ubicación"
                         }
                     }
                 }
@@ -74,7 +73,7 @@ fun ProfileScreen(navController: NavController) {
                 }
             }
         }) {
-            Text("Get Location")
+            Text("Obtener ubicación")
         }
     }
 }

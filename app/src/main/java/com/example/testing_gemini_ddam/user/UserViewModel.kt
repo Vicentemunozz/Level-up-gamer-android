@@ -16,27 +16,38 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.LoggedOut)
     val loginState = _loginState.asStateFlow()
 
-    fun login(email: String) {
+    init {
         viewModelScope.launch {
-            val user = userDao.getUser(email)
+            userDao.insert(User(email = "user@gmail.com", username = "john doe", birthDate = "01/01/2000", password = "admin"))
+            userDao.insert(User(email = "admin@gmail.com", username = "userAdmin", birthDate = "01/01/2000", password = "123", isAdmin = true))
+        }
+    }
+
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            val user = userDao.getUser(email, password)
             if (user != null) {
-                _loginState.value = LoginState.LoggedIn
+                _loginState.value = LoginState.LoggedIn(user)
             } else {
-                _loginState.value = LoginState.Error("User not found")
+                _loginState.value = LoginState.Error("Invalid credentials")
             }
         }
     }
 
-    fun register(email: String) {
+    fun register(email: String, username: String, birthDate: String, password: String) {
         viewModelScope.launch {
-            userDao.insert(User(email = email))
-            _loginState.value = LoginState.LoggedIn
+            userDao.insert(User(email = email, username = username, birthDate = birthDate, password = password))
+            _loginState.value = LoginState.LoggedIn(User(email, username, birthDate, password))
         }
+    }
+
+    fun logout() {
+        _loginState.value = LoginState.LoggedOut
     }
 }
 
 sealed class LoginState {
-    object LoggedIn : LoginState()
+    data class LoggedIn(val user: User) : LoginState()
     object LoggedOut : LoginState()
     data class Error(val message: String) : LoginState()
 }

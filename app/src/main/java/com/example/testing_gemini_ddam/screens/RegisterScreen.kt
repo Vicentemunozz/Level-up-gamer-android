@@ -12,35 +12,26 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.testing_gemini_ddam.user.LoginState
 import com.example.testing_gemini_ddam.user.UserViewModel
 
 @Composable
-fun LoginScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
+fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var birthDate by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val loginState by userViewModel.loginState.collectAsState()
-
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.LoggedIn) {
-            navController.navigate("home")
-        }
-    }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -53,7 +44,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Iniciar Sesión", style = MaterialTheme.typography.headlineMedium)
+                Text("Registro", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -63,20 +54,38 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Usuario") }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = birthDate,
+                    onValueChange = { birthDate = it },
+                    label = { Text("Fecha de Nacimiento") }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Contraseña") },
                     visualTransformation = PasswordVisualTransformation()
                 )
-                if (loginState is LoginState.Error) {
-                    Text(text = (loginState as LoginState.Error).message, color = Color.Red)
-                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirmar Contraseña") },
+                    visualTransformation = PasswordVisualTransformation()
+                )
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { userViewModel.login(email, password) }) {
-                    Text("Iniciar Sesión")
-                }
-                TextButton(onClick = { navController.navigate("register") }) {
-                    Text("¿No tienes una cuenta? Regístrate")
+                Button(onClick = { 
+                    if (password == confirmPassword) {
+                        userViewModel.register(email, username, birthDate, password)
+                        navController.navigate("login")
+                    }
+                 }) {
+                    Text("Registrarse")
                 }
             }
         }

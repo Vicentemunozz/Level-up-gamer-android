@@ -16,10 +16,10 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     val products = productDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun addProduct(name: String, quantity: String) {
+    fun addProduct(name: String, quantity: String, imageUri: String?) {
         val quantityInt = quantity.toIntOrNull() ?: return
         viewModelScope.launch {
-            productDao.insert(Product(name = name, quantity = quantityInt))
+            productDao.insert(Product(name = name, quantity = quantityInt, imageUri = imageUri))
         }
     }
 
