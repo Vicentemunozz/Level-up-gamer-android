@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "intento_proyecto"
+rootProject.name = "testing_gemini_ddam"
 include(":app")
- 
