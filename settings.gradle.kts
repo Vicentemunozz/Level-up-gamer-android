@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "intento_proyecto"
+rootProject.name = "app_1A"
 include(":app")
- 
